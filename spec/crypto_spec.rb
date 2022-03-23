@@ -3,6 +3,7 @@
 require_relative '../credit_card'
 require_relative '../substitution_cipher'
 require_relative '../double_trans_cipher'
+require_relative '../sk_cipher'
 require 'minitest/autorun'
 
 describe 'Test card info encryption' do
@@ -44,11 +45,6 @@ describe 'Test card info encryption' do
   # TODO: Add tests for double transposition and modern symmetric key ciphers
   #       Can you DRY out the tests using metaprogramming? (see lecture slide)
   # before do
-  #   @cc = CreditCard.new('4916603231464963', 'Mar-30-2020',
-  #                        'Soumya Ray', 'Visa')
-  #   @key = [[3, 1, 2, 0], [2, 3, 0, 1]]
-  # end
-
   describe 'Using Double Transposition Cipher' do
     it 'should encrypt card information' do
       enc = DoubleTranspositionCipher.encrypt(@cc, @key)
@@ -59,6 +55,26 @@ describe 'Test card info encryption' do
     it 'should decrypt text' do
       enc = DoubleTranspositionCipher.encrypt(@cc, @key)
       dec = DoubleTranspositionCipher.decrypt(enc, @key)
+      _(dec).must_equal @cc.to_s
+    end
+  end
+
+  # TODO: Modern Symmetric Cipher, NaCl
+  describe 'Using Modern Symmetric Cipher' do
+    # first generate new key
+    before do
+      @key = ModernSymmetricCipher.generate_new_key
+    end
+
+    it 'should encrypt card information' do
+      _nonce, enc = ModernSymmetricCipher.encrypt(@cc, @key)
+      _(enc).wont_equal @cc.to_s
+      _(enc).wont_be_nil
+    end
+
+    it 'should decrypt text' do
+      nonce, enc = ModernSymmetricCipher.encrypt(@cc, @key)
+      dec = ModernSymmetricCipher.decrypt(enc, nonce, @key)
       _(dec).must_equal @cc.to_s
     end
   end
