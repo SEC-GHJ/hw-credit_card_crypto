@@ -16,23 +16,20 @@ module ModernSymmetricCipher
     # TODO: Return an encrypted string
     #       Use base64 for ciphertext so that it is sendable as text
     key = Base64.strict_decode64(key)
-    secret_box = RbNaCl::SecretBox.new(key)
-    # nonce isn't secret, and can be sent with the ciphertext
-    nonce = RbNaCl::Random.random_bytes(secret_box.nonce_bytes)
-    cipher = secret_box.encrypt(nonce, document.to_s)
+    simple_box = RbNaCl::SimpleBox.from_secret_key(key)
+    cipher = simple_box.encrypt(document.to_s)
 
-    # return ciphertexet with the nonce
-    [Base64.strict_encode64(nonce), Base64.strict_encode64(cipher)]
+    # return ciphertexet
+    Base64.strict_encode64(cipher)
   end
 
-  def self.decrypt(encrypted_cc, nonce, key)
+  def self.decrypt(encrypted_cc, key)
     # TODO: Decrypt from encrypted message above
     #       Expect Base64 encrypted message and Base64 key
-    nonce = Base64.strict_decode64(nonce)
     cipher = Base64.strict_decode64(encrypted_cc)
     key = Base64.strict_decode64(key)
-    secret_box = RbNaCl::SecretBox.new(key)
+    simple_box = RbNaCl::SimpleBox.from_secret_key(key)
 
-    secret_box.decrypt(nonce, cipher)
+    simple_box.decrypt(cipher)
   end
 end

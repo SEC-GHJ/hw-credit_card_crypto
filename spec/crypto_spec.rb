@@ -67,14 +67,14 @@ describe 'Test card info encryption' do
     end
 
     it 'should encrypt card information' do
-      _nonce, enc = ModernSymmetricCipher.encrypt(@cc, @key)
+      enc = ModernSymmetricCipher.encrypt(@cc, @key)
       _(enc).wont_equal @cc.to_s
       _(enc).wont_be_nil
     end
 
     it 'should decrypt text' do
-      nonce, enc = ModernSymmetricCipher.encrypt(@cc, @key)
-      dec = ModernSymmetricCipher.decrypt(enc, nonce, @key)
+      enc = ModernSymmetricCipher.encrypt(@cc, @key)
+      dec = ModernSymmetricCipher.decrypt(enc, @key)
       _(dec).must_equal @cc.to_s
     end
   end
